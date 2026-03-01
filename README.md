@@ -3,7 +3,13 @@ src/main/java/com/example/frostbyte
 ├── navigation/                     // Handles all app navigation
 │     └── AppNavGraph.kt            // Defines NavHost, composable routes, and arguments
 │
-├── ui/                             // All UI-related code (screens & components)
+├── ui/                             // All UI-related code (screens, components, theme)
+│     ├── theme/                    // Material 3 theming files
+│     │     ├── Color.kt            // Defines app colors
+│     │     ├── Shape.kt            // Defines shapes (corners, cutouts) for components
+│     │     ├── Theme.kt            // Combines colors, typography, and shapes; provides MaterialTheme
+│     │     └── Type.kt             // Defines typography styles
+│     │
 │     ├── home/                     // Home screen UI
 │     │     └── HomeScreen.kt       // Shows list of task lists, FAB to add new lists
 │     ├── list/                     // List screen UI
