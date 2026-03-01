@@ -8,7 +8,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.example.FrostByte.navigation.AppNavGraph
 import com.example.FrostByte.ui.theme.FrostByte
+
 
 class MainActivity : ComponentActivity() {
 
@@ -32,18 +35,6 @@ class MainActivity : ComponentActivity() {
  */
 @Composable
 fun FrostByteApp() {
-
-}
-
-
-
-/**
- * Composable that displays what the UI of the app looks like in light theme in the design tab.
- */
-@Preview
-@Composable
-fun FrostBytePreview() {
-    FrostByte{
-        FrostByteApp()
-    }
+    val navController = rememberNavController()
+    AppNavGraph(navController)
 }
