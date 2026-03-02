@@ -1,4 +1,5 @@
 package com.example.FrostByte.util
 
-class Constants {
+object Constants {
+    const val DATABASE_NAME = "frostbyte_db"
 }
