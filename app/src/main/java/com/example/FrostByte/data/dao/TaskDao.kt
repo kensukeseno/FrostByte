@@ -21,5 +21,5 @@ interface TaskDao {
     fun getTasksByListId(listId: Int): Flow<List<TaskEntity>>
 
     @Delete
-    fun deleteTask(task: TaskEntity)
+    suspend fun deleteTask(task: TaskEntity)
 }
