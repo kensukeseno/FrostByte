@@ -1,10 +1,12 @@
+package com.example.FrostByte.ui.list
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.FrostByte.ui.components.Header
 
 @Composable
 fun ListScreen(
@@ -14,14 +16,7 @@ fun ListScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Button(
-            onClick = { navController.navigate("home") }
-        ) {
-            Text("Logo")
-        }
-
-        // Title
-        Text(text = "List ID: $listId")
+        Header(navController = navController, title = "List ID: $listId")
 
         // Add Task Button
         Button(
@@ -45,7 +40,7 @@ fun ListScreen(
                         navController.navigate("task/$listId")
                     }
                 ) {
-                    Text("Edit")
+                    Text("edit icon")
                 }
             }
         }

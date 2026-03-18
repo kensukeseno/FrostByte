@@ -1,3 +1,5 @@
+package com.example.FrostByte.ui.task
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -19,7 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.FrostByte.ui.components.Header
 
 @Composable
 fun TaskScreen(navController: NavController, listId: Int) {
@@ -34,6 +38,8 @@ fun TaskScreen(navController: NavController, listId: Int) {
     var selectedHour by remember { mutableStateOf(0) }
     var selectedMinute by remember { mutableStateOf(0) }
 
+    var selectedDeadlineIndex by remember { mutableStateOf<Int?>(null) }
+
 
     val options = listOf(
         "1 hour",
@@ -46,13 +52,7 @@ fun TaskScreen(navController: NavController, listId: Int) {
         modifier = Modifier.fillMaxSize()
     ) {
 
-        Button(
-            onClick = { navController.navigate("home") }
-        ) {
-            Text("Logo")
-        }
-
-        Text(text = "Task $listId")
+        Header(navController = navController, title = "Task $listId")
 
         // -----------------------
         // Deadline Section
@@ -61,11 +61,14 @@ fun TaskScreen(navController: NavController, listId: Int) {
 
         Row {
             Checkbox(
-                checked = false,
-                onCheckedChange = { }
+                checked = selectedDeadlineIndex == 0,
+                onCheckedChange = { checked ->
+                    selectedDeadlineIndex = if (checked) 0 else null
+                }
             )
             Button(
-                onClick = { expanded = true }
+                onClick = { expanded = true },
+                enabled = selectedDeadlineIndex == 0
             ) {
                 Text(selectedOption)
             }
@@ -85,19 +88,24 @@ fun TaskScreen(navController: NavController, listId: Int) {
                 }
             }
         }
-
-
-
         Row {
             Checkbox(
-                checked = false,
-                onCheckedChange = { }
+                checked = selectedDeadlineIndex == 1,
+                onCheckedChange = { checked ->
+                    selectedDeadlineIndex = if (checked) 1 else null
+                }
             )
-            Button(onClick = { showDatePicker = true }) {
+            Button(
+                onClick = { showDatePicker = true },
+                enabled = selectedDeadlineIndex == 1
+            ) {
                 Text("Select Date")
             }
 
-            Button(onClick = { showTimePicker = true }) {
+            Button(
+                onClick = { showTimePicker = true },
+                enabled = selectedDeadlineIndex == 1
+            ) {
                 Text("Select Time")
             }
 
@@ -168,21 +176,24 @@ fun TaskScreen(navController: NavController, listId: Int) {
         // -----------------------
         Text(text = "Impact")
 
-        Slider(
-            value = impact,
-            onValueChange = { impact = it },
-            valueRange = 1f..5f,
-            steps = 3
-        )
-
-        Text(
-            text = when (impact.toInt()) {
-                1 -> "!"
-                2 -> "!!"
-                3 -> "!!!"
-                4 -> "!!!!"
-                else -> "!!!!!"
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Slider(
+                value = impact,
+                onValueChange = { impact = it },
+                valueRange = 1f..5f,
+                steps = 3,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("!")
+                Text("!!")
+                Text("!!!")
+                Text("!!!!")
+                Text("!!!!!")
             }
-        )
+        }
     }
 }
