@@ -1,7 +1,7 @@
 package com.example.FrostByte.navigation
-import ListScreen
-import ResultsScreen
-import TaskScreen
+import com.example.FrostByte.ui.list.ListScreen
+import com.example.FrostByte.ui.results.ResultsScreen
+import com.example.FrostByte.ui.task.TaskScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost

@@ -1,15 +1,15 @@
+package com.example.FrostByte.ui.results
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.FrostByte.ui.components.Header
 
 
 @Composable
@@ -22,19 +22,17 @@ fun ResultsScreen(navController: NavController, listId: Int) {
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        Button(
-            onClick = { navController.navigate("home") }
-        ) {
-            Text("Logo")
-        }
-
-        Text(text = "Result")
+        Header(navController = navController, title = "Result")
 
         // DO Section
         Text(text = "DO")
         LazyColumn(modifier = Modifier.height(100.dp)) { // each section scrollable
             items(tasksDo) { task ->
-                Text(text = task)
+                Row {
+                    Text(text = task)
+                    Button(onClick = { /* Edit action */ }) { Text("Edit") }
+                    Button(onClick = { /* Delete action */ }) { Text("Delete") }
+                }
             }
         }
 
@@ -42,7 +40,11 @@ fun ResultsScreen(navController: NavController, listId: Int) {
         Text(text = "SCHEDULE")
         LazyColumn(modifier = Modifier.height(100.dp)) {
             items(tasksSchedule) { task ->
-                Text(text = task)
+                Row {
+                    Text(text = task)
+                    Button(onClick = { /* Edit action */ }) { Text("Edit") }
+                    Button(onClick = { /* Delete action */ }) { Text("Delete") }
+                }
             }
         }
 
@@ -50,7 +52,11 @@ fun ResultsScreen(navController: NavController, listId: Int) {
         Text(text = "DELEGATE")
         LazyColumn(modifier = Modifier.height(100.dp)) {
             items(tasksDelegate) { task ->
-                Text(text = task)
+                Row {
+                    Text(text = task)
+                    Button(onClick = { /* Edit action */ }) { Text("Edit") }
+                    Button(onClick = { /* Delete action */ }) { Text("Delete") }
+                }
             }
         }
 
@@ -58,7 +64,11 @@ fun ResultsScreen(navController: NavController, listId: Int) {
         Text(text = "DELETE")
         LazyColumn(modifier = Modifier.height(100.dp)) {
             items(tasksDelete) { task ->
-                Text(text = task)
+                Row {
+                    Text(text = task)
+                    Button(onClick = { /* Edit action */ }) { Text("Edit") }
+                    Button(onClick = { /* Delete action */ }) { Text("Delete") }
+                }
             }
         }
     }
