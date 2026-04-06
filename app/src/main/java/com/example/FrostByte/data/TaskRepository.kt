@@ -12,8 +12,16 @@ class TaskRepository(
 
     fun getAllLists() = listDao.getAllLists()
 
+    suspend fun getListById(id: Int): ListEntity? {
+        return listDao.getListById(id)
+    }
+
     fun getTasksByList(listId: Int) =
         taskDao.getTasksByListId(listId)
+
+    suspend fun getTaskById(id: Int): TaskEntity? {
+        return taskDao.getTaskById(id)
+    }
 
     suspend fun insertList(name: String) {
         listDao.insertList(ListEntity(name = name))

@@ -26,7 +26,6 @@ data class TaskEntity(
     val dueDate: Long?,
     val importance: Int,
     val urgency: Int,
-    val category: String,
     val isDone: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 )

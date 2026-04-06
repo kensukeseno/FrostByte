@@ -38,7 +38,6 @@ class HomeViewModel(
         notes: String? = null,
         importance: Int = 0,
         urgency: Int = 0,
-        category: String = "General"
     ) {
         viewModelScope.launch {
             taskDao.insertTask(
@@ -49,7 +48,6 @@ class HomeViewModel(
                     dueDate = null,
                     importance = importance,
                     urgency = urgency,
-                    category = category
                 )
             )
         }
