@@ -1,8 +1,9 @@
+package com.example.FrostByte.viewmodel
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.FrostByte.data.TaskRepository
 import com.example.FrostByte.data.entity.TaskEntity
-import com.example.FrostByte.domain.EisenhowerEngine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +18,6 @@ class TaskViewModel(
 
     // Add a new task
     fun addTask(listId: Int, title: String, importance: Int, urgency: Int) {
-        val category = EisenhowerEngine.categorizeTask(importance, urgency)
         val newTask = TaskEntity(
             listId = listId,
             title = title,
@@ -25,7 +25,6 @@ class TaskViewModel(
             dueDate = null,
             importance = importance,
             urgency = urgency,
-            category = category
         )
 
         viewModelScope.launch {
