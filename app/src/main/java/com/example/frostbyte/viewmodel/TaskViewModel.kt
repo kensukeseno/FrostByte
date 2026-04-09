@@ -49,4 +49,13 @@ class TaskViewModel(
             tasksRepository.deleteTask(task)
         }
     }
+
+    // Update task if Done
+    fun toggleTaskDone(task: TaskEntity) {
+        viewModelScope.launch {
+            tasksRepository.updateTask(
+                task.copy(isDone = !task.isDone)
+            )
+        }
+    }
 }

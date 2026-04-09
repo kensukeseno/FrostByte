@@ -43,7 +43,7 @@ fun ListScreen(
             TaskItem(
                 task = task,
                 onCheckChanged = {
-                    //taskViewModel.toggleTaskDone(task)
+                    taskViewModel.toggleTaskDone(task)
                 },
                 onClick = {
                     navController.navigate("task/$listId")
