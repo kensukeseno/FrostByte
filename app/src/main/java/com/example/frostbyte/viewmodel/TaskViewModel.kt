@@ -42,4 +42,11 @@ class TaskViewModel(
                 }
         }
     }
+
+    // Delete a task
+    fun deleteTask(task: TaskEntity) {
+        viewModelScope.launch {
+            tasksRepository.deleteTask(task)
+        }
+    }
 }

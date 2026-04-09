@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
+import com.example.frostbyte.ui.components.TaskItem
 import com.example.frostbyte.viewmodel.TaskViewModel
 
 @Composable
@@ -38,21 +39,19 @@ fun ListScreen(
             Text("Add Task")
         }
 
-        // Fake task list (placeholder only)
-        //val tasks = listOf(1, 2, 3)
-
         tasks.forEach { task ->
-            Row {
-                Text(text = task.title)
-
-                Button(
-                    onClick = {
-                        navController.navigate("task/$listId")
-                    }
-                ) {
-                    Text("edit icon")
+            TaskItem(
+                task = task,
+                onCheckChanged = {
+                    //taskViewModel.toggleTaskDone(task)
+                },
+                onClick = {
+                    navController.navigate("task/$listId")
+                },
+                onDeleteClick = {
+                    taskViewModel.deleteTask(task)
                 }
-            }
+            )
         }
 
         // Button to navigate to ResultsScreen
