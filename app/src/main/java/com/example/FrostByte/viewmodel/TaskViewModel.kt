@@ -2,14 +2,14 @@ package com.example.FrostByte.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.FrostByte.data.TaskRepository
+import com.example.FrostByte.data.repository.TasksRepository
 import com.example.FrostByte.data.entity.TaskEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class TaskViewModel(
-    private val repository: TaskRepository
+    private val tasksRepository: TasksRepository
 ) : ViewModel() {
 
     // State of tasks for a list
@@ -28,7 +28,7 @@ class TaskViewModel(
         )
 
         viewModelScope.launch {
-            repository.insertTask(newTask)
+            tasksRepository.insertTask(newTask)
             loadTasks(listId)
         }
     }
@@ -36,7 +36,7 @@ class TaskViewModel(
     // Load tasks from repository
     fun loadTasks(listId: Int) {
         viewModelScope.launch {
-            repository.getTasksByList(listId)
+            tasksRepository.getTasksByListId(listId)
                 .collect { taskList ->
                     _tasks.value = taskList
                 }

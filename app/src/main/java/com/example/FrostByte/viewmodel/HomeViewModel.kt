@@ -2,30 +2,30 @@ package com.example.FrostByte.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import com.example.FrostByte.data.dao.ListDao
-import com.example.FrostByte.data.dao.TaskDao
 import com.example.FrostByte.data.entity.ListEntity
 import com.example.FrostByte.data.entity.TaskEntity
+import com.example.FrostByte.data.repository.ListsRepository
+import com.example.FrostByte.data.repository.TasksRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val listDao: ListDao,
-    private val taskDao: TaskDao
+    private val listsRepository: ListsRepository,
+    private val tasksRepository: TasksRepository
 ) : ViewModel() {
 
     // 🔹 Get all lists
-    val allLists: Flow<List<ListEntity>> = listDao.getAllLists()
+    val allLists: Flow<List<ListEntity>> = listsRepository.getAllLists()
 
     // 🔹 Get tasks for a specific list
     fun getTasksForList(listId: Int): Flow<List<TaskEntity>> {
-        return taskDao.getTasksByListId(listId)
+        return tasksRepository.getTasksByListId(listId)
     }
 
     // 🔹 Insert new list
     fun addList(name: String) {
         viewModelScope.launch {
-            listDao.insertList(
+            listsRepository.insertList(
                 ListEntity(name = name)
             )
         }
@@ -40,7 +40,7 @@ class HomeViewModel(
         urgency: Int = 0,
     ) {
         viewModelScope.launch {
-            taskDao.insertTask(
+            tasksRepository.insertTask(
                 TaskEntity(
                     listId = listId,
                     title = title,
@@ -56,7 +56,7 @@ class HomeViewModel(
     // 🔹 Mark task done
     fun toggleTaskDone(task: TaskEntity) {
         viewModelScope.launch {
-            taskDao.updateTask(
+            tasksRepository.updateTask(
                 task.copy(isDone = !task.isDone)
             )
         }
@@ -65,7 +65,7 @@ class HomeViewModel(
     // 🔹 Delete task
     fun deleteTask(task: TaskEntity) {
         viewModelScope.launch {
-            taskDao.deleteTask(task)
+            tasksRepository.deleteTask(task)
         }
     }
 }
