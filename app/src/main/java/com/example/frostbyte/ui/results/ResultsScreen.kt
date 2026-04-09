@@ -10,26 +10,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
-
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.frostbyte.domain.EisenhowerEngine
+import com.example.frostbyte.viewmodel.TaskViewModel
 
 @Composable
-fun ResultsScreen(navController: NavController, listId: Int) {
-    // Fake tasks for demonstration
-    val tasksDo = listOf("Task 1", "Task 2", "Task 3")
-    val tasksSchedule = listOf("Task 4", "Task 5")
-    val tasksDelegate = listOf("Task 6")
-    val tasksDelete = listOf("Task 7", "Task 8")
+fun ResultsScreen(
+    navController: NavController,
+    listId: Int,
+    taskViewModel: TaskViewModel
+) {
+    LaunchedEffect(listId) {
+        taskViewModel.loadTasks(listId)
+    }
+
+    val tasks by taskViewModel.tasks.collectAsState()
+
+    val tasksDo = tasks.filter {
+        EisenhowerEngine.categorizeTask(it.importance, it.urgency) == "Do"
+    }
+
+    val tasksSchedule = tasks.filter {
+        EisenhowerEngine.categorizeTask(it.importance, it.urgency) == "Schedule"
+    }
+
+    val tasksDelegate = tasks.filter {
+        EisenhowerEngine.categorizeTask(it.importance, it.urgency) == "Delegate"
+    }
+
+    val tasksDelete = tasks.filter {
+        EisenhowerEngine.categorizeTask(it.importance, it.urgency) == "Delete"
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
 
         Header(navController = navController, title = "Result")
 
         // DO Section
-        Text(text = "DO")
+        Text(text = "DO (${tasksDo.size})")
         LazyColumn(modifier = Modifier.height(100.dp)) { // each section scrollable
             items(tasksDo) { task ->
                 Row {
-                    Text(text = task)
+                    Text(text = task.title)
                     Button(onClick = { /* Edit action */ }) { Text("Edit") }
                     Button(onClick = { /* Delete action */ }) { Text("Delete") }
                 }
@@ -37,11 +61,11 @@ fun ResultsScreen(navController: NavController, listId: Int) {
         }
 
         // SCHEDULE Section
-        Text(text = "SCHEDULE")
+        Text(text = "SCHEDULE (${tasksSchedule.size})")
         LazyColumn(modifier = Modifier.height(100.dp)) {
             items(tasksSchedule) { task ->
                 Row {
-                    Text(text = task)
+                    Text(text = task.title)
                     Button(onClick = { /* Edit action */ }) { Text("Edit") }
                     Button(onClick = { /* Delete action */ }) { Text("Delete") }
                 }
@@ -49,11 +73,11 @@ fun ResultsScreen(navController: NavController, listId: Int) {
         }
 
         // DELEGATE Section
-        Text(text = "DELEGATE")
+        Text(text = "DELEGATE (${tasksDelegate.size})")
         LazyColumn(modifier = Modifier.height(100.dp)) {
             items(tasksDelegate) { task ->
                 Row {
-                    Text(text = task)
+                    Text(text = task.title)
                     Button(onClick = { /* Edit action */ }) { Text("Edit") }
                     Button(onClick = { /* Delete action */ }) { Text("Delete") }
                 }
@@ -61,11 +85,11 @@ fun ResultsScreen(navController: NavController, listId: Int) {
         }
 
         // DELETE Section
-        Text(text = "DELETE")
+        Text(text = "DELETE (${tasksDelete.size})")
         LazyColumn(modifier = Modifier.height(100.dp)) {
             items(tasksDelete) { task ->
                 Row {
-                    Text(text = task)
+                    Text(text = task.title)
                     Button(onClick = { /* Edit action */ }) { Text("Edit") }
                     Button(onClick = { /* Delete action */ }) { Text("Delete") }
                 }

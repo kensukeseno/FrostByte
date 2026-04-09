@@ -72,7 +72,18 @@ fun AppNavGraph(
 
         composable("results/{listId}") { backStackEntry ->
             val listId = backStackEntry.arguments?.getString("listId")?.toInt() ?: 0
-            ResultsScreen(navController, listId)
+
+            val taskViewModel: TaskViewModel = viewModel(
+                factory = TaskViewModelFactory(
+                    tasksRepository = appContainer.tasksRepository
+                )
+            )
+
+            ResultsScreen(
+                navController = navController,
+                listId = listId,
+                taskViewModel = taskViewModel
+            )
         }
     }
 }

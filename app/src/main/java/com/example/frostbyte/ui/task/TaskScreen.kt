@@ -24,14 +24,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
 import com.example.frostbyte.viewmodel.TaskViewModel
-
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 @Composable
 fun TaskScreen(
     navController: NavController,
     listId: Int,
     taskViewModel: TaskViewModel
 ) {
-    var impact by remember { mutableStateOf(1f) }
+    var importance by remember { mutableStateOf(1f) }
+    var urgency by remember { mutableStateOf(3f) }
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("Within timeframe") }
 
@@ -56,7 +58,9 @@ fun TaskScreen(
     )
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
 
         Header(navController = navController, title = "Task $listId")
@@ -176,25 +180,25 @@ fun TaskScreen(
         }
 
         // -----------------------
-        // Consequence Section
+        // Notes Section
         // -----------------------
-        Text(text = "Consequence")
+        Text(text = "Notes")
 
         TextField(
-            value = "",
+            value = notes,
             onValueChange = { notes = it },
-            label = { Text("Enter consequence description") }
+            label = { Text("Enter notes / consequence") }
         )
 
         // -----------------------
         // Impact Section
         // -----------------------
-        Text(text = "Impact")
+        Text(text = "Importance")
 
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Slider(
-                value = impact,
-                onValueChange = { impact = it },
+                value = importance,
+                onValueChange = { importance = it },
                 valueRange = 1f..5f,
                 steps = 3,
                 modifier = Modifier.fillMaxWidth()
@@ -211,14 +215,39 @@ fun TaskScreen(
             }
         }
 
+        // -----------------------
+        // Urgency Section
+        // -----------------------
+        Text(text = "Urgency")
+
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Slider(
+                value = urgency,
+                onValueChange = { urgency = it },
+                valueRange = 1f..5f,
+                steps = 3,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("1")
+                Text("2")
+                Text("3")
+                Text("4")
+                Text("5")
+            }
+        }
+
         Button(
             onClick = {
                 if (taskTitle.isNotBlank()) {
                     taskViewModel.addTask(
                         listId = listId,
                         title = taskTitle.trim(),
-                        importance = impact.toInt(),
-                        urgency = 3
+                        importance = importance.toInt(),
+                        urgency = urgency.toInt()
                     )
                     navController.popBackStack()
                 }
