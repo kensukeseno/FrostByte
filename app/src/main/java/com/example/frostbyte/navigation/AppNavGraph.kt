@@ -11,6 +11,8 @@ import com.example.frostbyte.data.AppContainer
 import com.example.frostbyte.ui.home.HomeScreen
 import com.example.frostbyte.viewmodel.HomeViewModel
 import com.example.frostbyte.viewmodel.HomeViewModelFactory
+import com.example.frostbyte.viewmodel.TaskViewModel
+import com.example.frostbyte.viewmodel.TaskViewModelFactory
 
 @Composable
 fun AppNavGraph(
@@ -38,12 +40,34 @@ fun AppNavGraph(
 
         composable("list/{listId}") { backStackEntry ->
             val listId = backStackEntry.arguments?.getString("listId")?.toInt() ?: 0
-            ListScreen(navController, listId)
+
+            val taskViewModel: TaskViewModel = viewModel(
+                factory = TaskViewModelFactory(
+                    tasksRepository = appContainer.tasksRepository
+                )
+            )
+
+            ListScreen(
+                navController = navController,
+                listId = listId,
+                taskViewModel = taskViewModel
+            )
         }
 
         composable("task/{listId}") { backStackEntry ->
             val listId = backStackEntry.arguments?.getString("listId")?.toInt() ?: 0
-            TaskScreen(navController, listId)
+
+            val taskViewModel: TaskViewModel = viewModel(
+                factory = TaskViewModelFactory(
+                    tasksRepository = appContainer.tasksRepository
+                )
+            )
+
+            TaskScreen(
+                navController = navController,
+                listId = listId,
+                taskViewModel = taskViewModel
+            )
         }
 
         composable("results/{listId}") { backStackEntry ->

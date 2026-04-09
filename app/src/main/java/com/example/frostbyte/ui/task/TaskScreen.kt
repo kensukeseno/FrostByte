@@ -23,9 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
+import com.example.frostbyte.viewmodel.TaskViewModel
 
 @Composable
-fun TaskScreen(navController: NavController, listId: Int) {
+fun TaskScreen(
+    navController: NavController,
+    listId: Int,
+    taskViewModel: TaskViewModel
+) {
     var impact by remember { mutableStateOf(1f) }
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("Within timeframe") }
@@ -36,6 +41,9 @@ fun TaskScreen(navController: NavController, listId: Int) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var selectedHour by remember { mutableStateOf(0) }
     var selectedMinute by remember { mutableStateOf(0) }
+
+    var taskTitle by remember { mutableStateOf("") }
+    var notes by remember { mutableStateOf("") }
 
     var selectedDeadlineIndex by remember { mutableStateOf<Int?>(null) }
 
@@ -52,6 +60,14 @@ fun TaskScreen(navController: NavController, listId: Int) {
     ) {
 
         Header(navController = navController, title = "Task $listId")
+
+        Text(text = "Task Title")
+
+        TextField(
+            value = taskTitle,
+            onValueChange = { taskTitle = it },
+            label = { Text("Enter task title") }
+        )
 
         // -----------------------
         // Deadline Section
@@ -166,7 +182,7 @@ fun TaskScreen(navController: NavController, listId: Int) {
 
         TextField(
             value = "",
-            onValueChange = { },
+            onValueChange = { notes = it },
             label = { Text("Enter consequence description") }
         )
 
@@ -194,5 +210,22 @@ fun TaskScreen(navController: NavController, listId: Int) {
                 Text("!!!!!")
             }
         }
+
+        Button(
+            onClick = {
+                if (taskTitle.isNotBlank()) {
+                    taskViewModel.addTask(
+                        listId = listId,
+                        title = taskTitle.trim(),
+                        importance = impact.toInt(),
+                        urgency = 3
+                    )
+                    navController.popBackStack()
+                }
+            }
+        ) {
+            Text("Save Task")
+        }
+
     }
 }
