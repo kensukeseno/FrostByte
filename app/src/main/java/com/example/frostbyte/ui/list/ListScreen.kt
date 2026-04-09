@@ -46,7 +46,7 @@ fun ListScreen(
                     taskViewModel.toggleTaskDone(task)
                 },
                 onClick = {
-                    navController.navigate("task/$listId")
+                    navController.navigate("task/$listId/${task.taskId}")
                 },
                 onDeleteClick = {
                     taskViewModel.deleteTask(task)

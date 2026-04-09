@@ -26,11 +26,15 @@ import com.example.frostbyte.ui.components.Header
 import com.example.frostbyte.viewmodel.TaskViewModel
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+
 @Composable
 fun TaskScreen(
     navController: NavController,
     listId: Int,
-    taskViewModel: TaskViewModel
+    taskViewModel: TaskViewModel,
+    taskId: Int? = null
 ) {
     var importance by remember { mutableStateOf(1f) }
     var urgency by remember { mutableStateOf(3f) }
@@ -49,6 +53,7 @@ fun TaskScreen(
 
     var selectedDeadlineIndex by remember { mutableStateOf<Int?>(null) }
 
+    val selectedTask by taskViewModel.selectedTask.collectAsState()
 
     val options = listOf(
         "1 hour",
@@ -56,6 +61,24 @@ fun TaskScreen(
         "3 days",
         "1 week"
     )
+
+    // Load the task if taskId is present
+    LaunchedEffect(taskId) {
+        if (taskId != null) {
+            taskViewModel.loadTask(taskId)
+        }
+    }
+
+    // Prefill the fields when the task above loads
+    LaunchedEffect(selectedTask) {
+        selectedTask?.let { task ->
+            taskTitle = task.title
+            notes = task.notes ?: ""
+            importance = task.importance.toFloat()
+            urgency = task.urgency.toFloat()
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -243,12 +266,26 @@ fun TaskScreen(
         Button(
             onClick = {
                 if (taskTitle.isNotBlank()) {
-                    taskViewModel.addTask(
-                        listId = listId,
-                        title = taskTitle.trim(),
-                        importance = importance.toInt(),
-                        urgency = urgency.toInt()
-                    )
+                    if (taskId == null) {
+                        // A new task is being added
+                        taskViewModel.addTask(
+                            listId = listId,
+                            title = taskTitle.trim(),
+                            notes = notes.ifBlank { null },
+                            importance = importance.toInt(),
+                            urgency = urgency.toInt()
+                        )
+                    } else {
+                        // An existing task is being updated
+                        taskViewModel.updateTask(
+                            taskId = taskId,
+                            listId = listId,
+                            title = taskTitle.trim(),
+                            notes = notes.ifBlank { null },
+                            importance = importance.toInt(),
+                            urgency = urgency.toInt()
+                        )
+                    }
                     navController.popBackStack()
                 }
             }

@@ -70,6 +70,24 @@ fun AppNavGraph(
             )
         }
 
+        composable("task/{listId}/{taskId}") { backStackEntry ->
+            val listId = backStackEntry.arguments?.getString("listId")?.toInt() ?: 0
+            val taskId = backStackEntry.arguments?.getString("taskId")?.toInt() ?: 0
+
+            val taskViewModel: TaskViewModel = viewModel(
+                factory = TaskViewModelFactory(
+                    tasksRepository = appContainer.tasksRepository
+                )
+            )
+
+            TaskScreen(
+                navController = navController,
+                listId = listId,
+                taskViewModel = taskViewModel,
+                taskId = taskId
+            )
+        }
+
         composable("results/{listId}") { backStackEntry ->
             val listId = backStackEntry.arguments?.getString("listId")?.toInt() ?: 0
 
