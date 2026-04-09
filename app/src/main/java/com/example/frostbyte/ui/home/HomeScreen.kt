@@ -88,7 +88,14 @@ fun HomeScreen(
                         navController.navigate("list/${list.listId}")
                     }
                 ) {
-                    Text("edit icon")
+                    Text("Open")
+                }
+                Button(
+                    onClick = {
+                        homeViewModel.deleteList(list)
+                    }
+                ) {
+                    Text("Del")
                 }
             }
         }
