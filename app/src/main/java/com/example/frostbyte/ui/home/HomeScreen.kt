@@ -8,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,11 +16,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
+import com.example.frostbyte.viewmodel.HomeViewModel
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    homeViewModel: HomeViewModel
+) {
     var showDialog by remember { mutableStateOf(false) }
     var listName by remember { mutableStateOf("") }
+
+    val lists by homeViewModel.allLists.collectAsState(initial = emptyList())
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -50,7 +57,9 @@ fun HomeScreen(navController: NavController) {
                 confirmButton = {
                     Button(
                         onClick = {
-                            // TODO: Save listName to database
+                            if (listName.isNotBlank()) {
+                                homeViewModel.addList(listName.trim())
+                            }
                             showDialog = false
                             listName = ""
                         }
@@ -69,23 +78,20 @@ fun HomeScreen(navController: NavController) {
             )
         }
 
-        // Fake category list (placeholder data)
-        val categories = listOf("Home", "Work", "School")
-
-        categories.forEach { category ->
-            Row{
+        lists.forEach { list ->
+            Row {
                 Text(
-                    text = category,
+                    text = list.name,
                 )
                 Button(
                     onClick = {
-                        // Navigate to ListScreen with category id
-                        navController.navigate("list/1") // The category ID is set to 1 temporarily before db integration
+                        navController.navigate("list/${list.listId}")
                     }
                 ) {
                     Text("edit icon")
                 }
             }
         }
+
     }
 }

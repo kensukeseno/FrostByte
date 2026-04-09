@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
+import com.example.frostbyte.data.AppContainer
 import com.example.frostbyte.navigation.AppNavGraph
 import com.example.frostbyte.ui.theme.FrostByte
 
@@ -35,5 +37,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun FrostByteApp() {
     val navController = rememberNavController()
-    AppNavGraph(navController)
+    val context = LocalContext.current
+    val appContainer = AppContainer(context)
+
+    AppNavGraph(
+        navController = navController,
+        appContainer = appContainer
+    )
 }

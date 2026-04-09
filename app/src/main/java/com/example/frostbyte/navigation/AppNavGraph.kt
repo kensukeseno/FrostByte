@@ -3,13 +3,20 @@ import com.example.frostbyte.ui.list.ListScreen
 import com.example.frostbyte.ui.results.ResultsScreen
 import com.example.frostbyte.ui.task.TaskScreen
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.frostbyte.data.AppContainer
 import com.example.frostbyte.ui.home.HomeScreen
+import com.example.frostbyte.viewmodel.HomeViewModel
+import com.example.frostbyte.viewmodel.HomeViewModelFactory
 
 @Composable
-fun AppNavGraph(navController: NavHostController) {
+fun AppNavGraph(
+    navController: NavHostController,
+    appContainer: AppContainer
+) {
 
     NavHost(
         navController = navController,
@@ -17,7 +24,16 @@ fun AppNavGraph(navController: NavHostController) {
     ) {
 
         composable("home") {
-            HomeScreen(navController)
+            val homeViewModel: HomeViewModel = viewModel(
+                factory = HomeViewModelFactory(
+                    listsRepository = appContainer.listsRepository,
+                    tasksRepository = appContainer.tasksRepository
+                )
+            )
+            HomeScreen(
+                navController = navController,
+                homeViewModel = homeViewModel
+            )
         }
 
         composable("list/{listId}") { backStackEntry ->
