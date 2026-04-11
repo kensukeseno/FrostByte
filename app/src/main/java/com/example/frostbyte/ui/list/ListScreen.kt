@@ -42,10 +42,7 @@ fun ListScreen(
         tasks.forEach { task ->
             TaskItem(
                 task = task,
-                onCheckChanged = {
-                    taskViewModel.toggleTaskDone(task)
-                },
-                onClick = {
+                onEditClick = {
                     navController.navigate("task/$listId/${task.taskId}")
                 },
                 onDeleteClick = {
@@ -64,4 +61,3 @@ fun ListScreen(
         }
     }
 }
-
