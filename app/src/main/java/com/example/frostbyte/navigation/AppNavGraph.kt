@@ -43,7 +43,8 @@ fun AppNavGraph(
 
             val taskViewModel: TaskViewModel = viewModel(
                 factory = TaskViewModelFactory(
-                    tasksRepository = appContainer.tasksRepository
+                    tasksRepository = appContainer.tasksRepository,
+                    listsRepository = appContainer.listsRepository
                 )
             )
 
@@ -59,7 +60,8 @@ fun AppNavGraph(
 
             val taskViewModel: TaskViewModel = viewModel(
                 factory = TaskViewModelFactory(
-                    tasksRepository = appContainer.tasksRepository
+                    tasksRepository = appContainer.tasksRepository,
+                    listsRepository = appContainer.listsRepository
                 )
             )
 
@@ -76,7 +78,8 @@ fun AppNavGraph(
 
             val taskViewModel: TaskViewModel = viewModel(
                 factory = TaskViewModelFactory(
-                    tasksRepository = appContainer.tasksRepository
+                    tasksRepository = appContainer.tasksRepository,
+                    listsRepository = appContainer.listsRepository
                 )
             )
 
@@ -93,7 +96,8 @@ fun AppNavGraph(
 
             val taskViewModel: TaskViewModel = viewModel(
                 factory = TaskViewModelFactory(
-                    tasksRepository = appContainer.tasksRepository
+                    tasksRepository = appContainer.tasksRepository,
+                    listsRepository = appContainer.listsRepository
                 )
             )
 

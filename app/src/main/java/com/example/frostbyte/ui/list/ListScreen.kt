@@ -24,11 +24,12 @@ fun ListScreen(
     }
 
     val tasks by taskViewModel.tasks.collectAsState()
+    val listName by taskViewModel.listName.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Header(navController = navController, title = "List ID: $listId")
+        Header(navController = navController, title = listName)
 
         // Add Task Button
         Button(

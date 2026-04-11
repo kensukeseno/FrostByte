@@ -2,14 +2,17 @@ package com.example.frostbyte.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frostbyte.data.repository.TasksRepository
+import com.example.frostbyte.data.entity.ListEntity
 import com.example.frostbyte.data.entity.TaskEntity
+import com.example.frostbyte.data.repository.ListsRepository
+import com.example.frostbyte.data.repository.TasksRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class TaskViewModel(
-    private val tasksRepository: TasksRepository
+    private val tasksRepository: TasksRepository,
+    private val listsRepository: ListsRepository
 ) : ViewModel() {
 
     // State of tasks for a list
@@ -17,6 +20,9 @@ class TaskViewModel(
     val tasks: StateFlow<List<TaskEntity>> = _tasks
     private val _selectedTask = MutableStateFlow<TaskEntity?>(null)
     val selectedTask: StateFlow<TaskEntity?> = _selectedTask
+
+    private val _listName = MutableStateFlow<String>("")
+    val listName: StateFlow<String> = _listName
 
     // Add a new task
     fun addTask(
@@ -52,10 +58,16 @@ class TaskViewModel(
     // Load tasks from repository
     fun loadTasks(listId: Int) {
         viewModelScope.launch {
+            // Load tasks
             tasksRepository.getTasksByListId(listId)
                 .collect { taskList ->
                     _tasks.value = taskList
                 }
+        }
+        viewModelScope.launch {
+            // Load list name
+            val list = listsRepository.getList(listId)
+            _listName.value = list?.name ?: "List $listId"
         }
     }
 
