@@ -1,5 +1,7 @@
 package com.example.frostbyte.ui.results
 
+import android.content.Intent
+import android.provider.CalendarContract
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -7,12 +9,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.example.frostbyte.data.entity.TaskEntity
 import com.example.frostbyte.domain.EisenhowerEngine
 import com.example.frostbyte.viewmodel.TaskViewModel
 
@@ -22,6 +26,8 @@ fun ResultsScreen(
     listId: Int,
     taskViewModel: TaskViewModel
 ) {
+    val context = LocalContext.current
+
     LaunchedEffect(listId) {
         taskViewModel.loadTasks(listId)
     }
@@ -42,6 +48,19 @@ fun ResultsScreen(
 
     val tasksDelete = tasks.filter {
         EisenhowerEngine.categorizeTask(it.importance, it.urgency, it.dueDate) == "Delete"
+    }
+
+    fun scheduleTaskInCalendar(task: TaskEntity) {
+        val intent = Intent(Intent.ACTION_INSERT).apply {
+            data = CalendarContract.Events.CONTENT_URI
+            putExtra(CalendarContract.Events.TITLE, task.title)
+            putExtra(CalendarContract.Events.DESCRIPTION, task.notes)
+            task.dueDate?.let {
+                putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, it)
+                putExtra(CalendarContract.EXTRA_EVENT_END_TIME, it + 3600000) // Default 1 hour duration
+            }
+        }
+        context.startActivity(intent)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -66,6 +85,7 @@ fun ResultsScreen(
             items(tasksSchedule) { task ->
                 Row {
                     Text(text = task.title)
+                    Button(onClick = { scheduleTaskInCalendar(task) }) { Text("Schedule") }
                     Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
                     Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
                 }
