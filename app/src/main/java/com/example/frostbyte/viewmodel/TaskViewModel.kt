@@ -24,13 +24,14 @@ class TaskViewModel(
         title: String,
         notes: String?,
         importance: Int,
-        urgency: Int
+        urgency: Int,
+        dueDate: Long? = null
     ) {
         val newTask = TaskEntity(
             listId = listId,
             title = title,
             notes = notes,
-            dueDate = null,
+            dueDate = dueDate,
             importance = importance,
             urgency = urgency,
         )
@@ -81,7 +82,8 @@ class TaskViewModel(
         title: String,
         notes: String?,
         importance: Int,
-        urgency: Int
+        urgency: Int,
+        dueDate: Long? = null
     ) {
         viewModelScope.launch {
             val existingTask = tasksRepository.getTask(taskId)
@@ -92,13 +94,11 @@ class TaskViewModel(
                         title = title,
                         notes = notes,
                         importance = importance,
-                        urgency = urgency
+                        urgency = urgency,
+                        dueDate = dueDate
                     )
                 )
             }
         }
     }
-
-
-
 }

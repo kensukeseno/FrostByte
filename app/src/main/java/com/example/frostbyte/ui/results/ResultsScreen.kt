@@ -29,19 +29,19 @@ fun ResultsScreen(
     val tasks by taskViewModel.tasks.collectAsState()
 
     val tasksDo = tasks.filter {
-        EisenhowerEngine.categorizeTask(it.importance, it.urgency) == "Do"
+        EisenhowerEngine.categorizeTask(it.importance, it.urgency, it.dueDate) == "Do"
     }
 
     val tasksSchedule = tasks.filter {
-        EisenhowerEngine.categorizeTask(it.importance, it.urgency) == "Schedule"
+        EisenhowerEngine.categorizeTask(it.importance, it.urgency, it.dueDate) == "Schedule"
     }
 
     val tasksDelegate = tasks.filter {
-        EisenhowerEngine.categorizeTask(it.importance, it.urgency) == "Delegate"
+        EisenhowerEngine.categorizeTask(it.importance, it.urgency, it.dueDate) == "Delegate"
     }
 
     val tasksDelete = tasks.filter {
-        EisenhowerEngine.categorizeTask(it.importance, it.urgency) == "Delete"
+        EisenhowerEngine.categorizeTask(it.importance, it.urgency, it.dueDate) == "Delete"
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
