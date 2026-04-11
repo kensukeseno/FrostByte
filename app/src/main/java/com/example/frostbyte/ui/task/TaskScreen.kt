@@ -16,6 +16,7 @@ import com.example.frostbyte.viewmodel.TaskViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.runtime.collectAsState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +39,9 @@ fun TaskScreen(
     var notes by remember { mutableStateOf("") }
 
     val selectedTask by taskViewModel.selectedTask.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     // Load the task if taskId is present
     LaunchedEffect(taskId) {
@@ -93,176 +97,196 @@ fun TaskScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-
-        Header(navController = navController, title = "Task Details")
-
-        Text(text = "Task Title", modifier = Modifier.padding(16.dp))
-
-        TextField(
-            value = taskTitle,
-            onValueChange = { taskTitle = it },
-            label = { Text("Enter task title") },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-        )
-
-        // -----------------------
-        // Deadline Section
-        // -----------------------
-        Text(text = "Deadline", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            Button(onClick = { showDatePicker = true }) {
-                val displayText = if (selectedDate == null) {
-                    "Select Date"
-                } else {
-                    val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-                    sdf.timeZone = TimeZone.getTimeZone("UTC") // Force display to UTC
-                    sdf.format(selectedDate)
-                }
-                Text(displayText)
-            }
 
-            OutlinedTextField(
-                value = selectedHour,
-                onValueChange = { if (it.length <= 2) selectedHour = it.filter { char -> char.isDigit() } },
-                modifier = Modifier.width(65.dp),
-                label = { Text("HH") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
+            Header(navController = navController, title = "Task Details")
+
+            Text(text = "Task Title", modifier = Modifier.padding(16.dp))
+
+            TextField(
+                value = taskTitle,
+                onValueChange = { taskTitle = it },
+                label = { Text("Enter task title") },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                isError = taskTitle.isBlank()
             )
-            Text(":")
-            OutlinedTextField(
-                value = selectedMinute,
-                onValueChange = { if (it.length <= 2) selectedMinute = it.filter { char -> char.isDigit() } },
-                modifier = Modifier.width(65.dp),
-                label = { Text("MM") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
-            )
-        }
 
-        if (showDatePicker) {
-            val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate)
-            DatePickerDialog(
-                onDismissRequest = { showDatePicker = false },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            selectedDate = datePickerState.selectedDateMillis
-                            showDatePicker = false
-                        }
-                    ) {
-                        Text("OK")
-                    }
-                }
-            ) {
-                DatePicker(state = datePickerState)
-            }
-        }
+            // -----------------------
+            // Deadline Section
+            // -----------------------
+            Text(text = "Deadline", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
 
-        // -----------------------
-        // Notes Section
-        // -----------------------
-        Text(text = "Notes", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-        TextField(
-            value = notes,
-            onValueChange = { notes = it },
-            label = { Text("Enter notes / consequence") },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-        )
-
-        // -----------------------
-        // Impact Section
-        // -----------------------
-        Text(text = "Importance", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Slider(
-                value = importance,
-                onValueChange = { importance = it },
-                valueRange = 1f..5f,
-                steps = 3,
-                modifier = Modifier.fillMaxWidth()
-            )
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("!")
-                Text("!!")
-                Text("!!!")
-                Text("!!!!")
-                Text("!!!!!")
-            }
-        }
-
-        // -----------------------
-        // Urgency Section
-        // -----------------------
-        Text(text = "Urgency", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Slider(
-                value = urgency,
-                onValueChange = { urgency = it },
-                valueRange = 1f..5f,
-                steps = 3,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("1")
-                Text("2")
-                Text("3")
-                Text("4")
-                Text("5")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                if (taskTitle.isNotBlank()) {
-                    val finalDueDate = calculateFinalDueDate()
-                    if (taskId == null) {
-                        taskViewModel.addTask(
-                            listId = listId,
-                            title = taskTitle.trim(),
-                            notes = notes.ifBlank { null },
-                            importance = importance.toInt(),
-                            urgency = urgency.toInt(),
-                            dueDate = finalDueDate
-                        )
+                Button(
+                    onClick = { showDatePicker = true },
+                    colors = if (selectedDate == null) ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error) else ButtonDefaults.buttonColors()
+                ) {
+                    val displayText = if (selectedDate == null) {
+                        "Select Date"
                     } else {
-                        taskViewModel.updateTask(
-                            taskId = taskId,
-                            listId = listId,
-                            title = taskTitle.trim(),
-                            notes = notes.ifBlank { null },
-                            importance = importance.toInt(),
-                            urgency = urgency.toInt(),
-                            dueDate = finalDueDate
-                        )
+                        val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                        sdf.timeZone = TimeZone.getTimeZone("UTC") // Force display to UTC
+                        sdf.format(selectedDate)
                     }
-                    navController.popBackStack()
+                    Text(displayText)
                 }
-            },
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        ) {
-            Text("Save Task")
+
+                OutlinedTextField(
+                    value = selectedHour,
+                    onValueChange = { if (it.length <= 2) selectedHour = it.filter { char -> char.isDigit() } },
+                    modifier = Modifier.width(65.dp),
+                    label = { Text("HH") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true
+                )
+                Text(":")
+                OutlinedTextField(
+                    value = selectedMinute,
+                    onValueChange = { if (it.length <= 2) selectedMinute = it.filter { char -> char.isDigit() } },
+                    modifier = Modifier.width(65.dp),
+                    label = { Text("MM") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true
+                )
+            }
+
+            if (showDatePicker) {
+                val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate)
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                selectedDate = datePickerState.selectedDateMillis
+                                showDatePicker = false
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+
+            // -----------------------
+            // Notes Section
+            // -----------------------
+            Text(text = "Notes", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+
+            TextField(
+                value = notes,
+                onValueChange = { notes = it },
+                label = { Text("Enter notes / consequence") },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            )
+
+            // -----------------------
+            // Impact Section
+            // -----------------------
+            Text(text = "Importance", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Slider(
+                    value = importance,
+                    onValueChange = { importance = it },
+                    valueRange = 1f..5f,
+                    steps = 3,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("!")
+                    Text("!!")
+                    Text("!!!")
+                    Text("!!!!")
+                    Text("!!!!!")
+                }
+            }
+
+            // -----------------------
+            // Urgency Section
+            // -----------------------
+            Text(text = "Urgency", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Slider(
+                    value = urgency,
+                    onValueChange = { urgency = it },
+                    valueRange = 1f..5f,
+                    steps = 3,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("1")
+                    Text("2")
+                    Text("3")
+                    Text("4")
+                    Text("5")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    if (taskTitle.isNotBlank() && selectedDate != null) {
+                        val finalDueDate = calculateFinalDueDate()
+                        if (taskId == null) {
+                            taskViewModel.addTask(
+                                listId = listId,
+                                title = taskTitle.trim(),
+                                notes = notes.ifBlank { null },
+                                importance = importance.toInt(),
+                                urgency = urgency.toInt(),
+                                dueDate = finalDueDate
+                            )
+                        } else {
+                            taskViewModel.updateTask(
+                                taskId = taskId,
+                                listId = listId,
+                                title = taskTitle.trim(),
+                                notes = notes.ifBlank { null },
+                                importance = importance.toInt(),
+                                urgency = urgency.toInt(),
+                                dueDate = finalDueDate
+                            )
+                        }
+                        navController.popBackStack()
+                    } else {
+                        scope.launch {
+                            val message = if (taskTitle.isBlank() && selectedDate == null) {
+                                "Title and Date are required"
+                            } else if (taskTitle.isBlank()) {
+                                "Title is required"
+                            } else {
+                                "Date is required"
+                            }
+                            snackbarHostState.showSnackbar(message)
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            ) {
+                Text("Save Task")
+            }
         }
     }
 }
