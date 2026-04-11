@@ -54,8 +54,8 @@ fun ResultsScreen(
             items(tasksDo) { task ->
                 Row {
                     Text(text = task.title)
-                    Button(onClick = { /* Edit action */ }) { Text("Edit") }
-                    Button(onClick = { /* Delete action */ }) { Text("Delete") }
+                    Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
+                    Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
                 }
             }
         }
@@ -66,8 +66,8 @@ fun ResultsScreen(
             items(tasksSchedule) { task ->
                 Row {
                     Text(text = task.title)
-                    Button(onClick = { /* Edit action */ }) { Text("Edit") }
-                    Button(onClick = { /* Delete action */ }) { Text("Delete") }
+                    Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
+                    Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
                 }
             }
         }
@@ -78,8 +78,8 @@ fun ResultsScreen(
             items(tasksDelegate) { task ->
                 Row {
                     Text(text = task.title)
-                    Button(onClick = { /* Edit action */ }) { Text("Edit") }
-                    Button(onClick = { /* Delete action */ }) { Text("Delete") }
+                    Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
+                    Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
                 }
             }
         }
@@ -90,8 +90,8 @@ fun ResultsScreen(
             items(tasksDelete) { task ->
                 Row {
                     Text(text = task.title)
-                    Button(onClick = { /* Edit action */ }) { Text("Edit") }
-                    Button(onClick = { /* Delete action */ }) { Text("Delete") }
+                    Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
+                    Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
                 }
             }
         }
