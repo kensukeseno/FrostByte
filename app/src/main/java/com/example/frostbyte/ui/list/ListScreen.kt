@@ -1,7 +1,10 @@
 package com.example.frostbyte.ui.list
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -10,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
 import com.example.frostbyte.ui.components.TaskItem
@@ -46,24 +50,32 @@ fun ListScreen(
             ) {
                 Text("Add Task")
             }
-
-            tasks.forEach { task ->
-                TaskItem(
-                    task = task,
-                    onEditClick = {
-                        navController.navigate("task/$listId/${task.taskId}")
-                    },
-                    onDeleteClick = {
-                        taskViewModel.deleteTask(task)
-                    }
-                )
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                items(tasks) { task ->
+                    TaskItem(
+                        task = task,
+                        onEditClick = { navController.navigate("task/$listId/${task.taskId}") },
+                        onDeleteClick = { taskViewModel.deleteTask(task) }
+                    )
+                }
             }
-
             // Button to navigate to ResultsScreen
             Button(
                 onClick = {
                     navController.navigate("results/$listId")
-                }
+                },
+                        modifier = Modifier
+                        .fillMaxWidth()
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
             ) {
                 Text("Prioritize!")
             }
