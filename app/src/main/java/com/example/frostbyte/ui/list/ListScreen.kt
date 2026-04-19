@@ -2,6 +2,8 @@ package com.example.frostbyte.ui.list
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,39 +28,45 @@ fun ListScreen(
     val tasks by taskViewModel.tasks.collectAsState()
     val listName by taskViewModel.listName.collectAsState()
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Header(navController = navController, title = listName)
-
-        // Add Task Button
-        Button(
-            onClick = {
-                navController.navigate("task/$listId")
-            }
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Text("Add Task")
-        }
+            Header(navController = navController, title = listName)
 
-        tasks.forEach { task ->
-            TaskItem(
-                task = task,
-                onEditClick = {
-                    navController.navigate("task/$listId/${task.taskId}")
-                },
-                onDeleteClick = {
-                    taskViewModel.deleteTask(task)
+            // Add Task Button
+            Button(
+                onClick = {
+                    navController.navigate("task/$listId")
                 }
-            )
-        }
-
-        // Button to navigate to ResultsScreen
-        Button(
-            onClick = {
-                navController.navigate("results/$listId")
+            ) {
+                Text("Add Task")
             }
-        ) {
-            Text("Prioritize!")
+
+            tasks.forEach { task ->
+                TaskItem(
+                    task = task,
+                    onEditClick = {
+                        navController.navigate("task/$listId/${task.taskId}")
+                    },
+                    onDeleteClick = {
+                        taskViewModel.deleteTask(task)
+                    }
+                )
+            }
+
+            // Button to navigate to ResultsScreen
+            Button(
+                onClick = {
+                    navController.navigate("results/$listId")
+                }
+            ) {
+                Text("Prioritize!")
+            }
         }
     }
 }

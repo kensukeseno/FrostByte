@@ -1,6 +1,8 @@
 package com.example.frostbyte.ui.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
@@ -20,11 +22,14 @@ import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
 import com.example.frostbyte.viewmodel.HomeViewModel
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-
+import androidx.compose.ui.unit.dp
+import com.example.frostbyte.ui.components.ListCard
+import androidx.compose.foundation.lazy.items
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -59,67 +64,61 @@ fun HomeScreen(
             //showBack = false to remove the back button from view
             Header(navController = navController, title = "Task Lists", showBack = false)
 
-            if (showDialog) {
-                AlertDialog(
-                    onDismissRequest = {
-                        showDialog = false
-                        listName = ""
-                    },
-                    title = { Text("Add New List") },
-                    text = {
-                        TextField(
-                            value = listName,
-                            onValueChange = { listName = it },
-                            label = { Text("List Name") }
-                        )
-                    },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                if (listName.isNotBlank()) {
-                                    homeViewModel.addList(listName.trim())
-                                }
-                                showDialog = false
-                                listName = ""
-                            }
-                        ) {
-                            Text("Save")
-                        }
-                    },
-                    dismissButton = {
-                        Button(onClick = {
-                            showDialog = false
-                            listName = ""
-                        }) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
-
-            lists.forEach { list ->
-                Row {
-                    Text(
-                        text = list.name,
+        //lazy column
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                items(lists) { list ->
+                    ListCard(
+                        listTitle = list.name,
+                        onClick = { navController.navigate("list/${list.listId}") },
+                        onDelete = { homeViewModel.deleteList(list) }
                     )
-                    Button(
-                        onClick = {
-                            navController.navigate("list/${list.listId}")
-                        }
-                    ) {
-                        Text("Open")
-                    }
-                    Button(
-                        onClick = {
-                            homeViewModel.deleteList(list)
-                        }
-                    ) {
-                        Text("Del")
-                    }
                 }
             }
-
         }
     }
+        if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                    showDialog = false
+                    listName = ""
+                },
+                title = { Text("Add New List") },
+                text = {
+                    TextField(
+                        value = listName,
+                        onValueChange = { listName = it },
+                        label = { Text("List Name") }
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            if (listName.isNotBlank()) {
+                                homeViewModel.addList(listName.trim())
+                            }
+                            showDialog = false
+                            listName = ""
+                        }
+                    ) {
+                        Text("Save")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        showDialog = false
+                        listName = ""
+                    }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
 }
+
 
