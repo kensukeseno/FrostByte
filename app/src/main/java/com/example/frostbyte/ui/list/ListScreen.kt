@@ -43,12 +43,20 @@ fun ListScreen(
             Header(navController = navController, title = listName)
 
             // Add Task Button
-            Button(
-                onClick = {
-                    navController.navigate("task/$listId")
-                }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.End
             ) {
-                Text("Add Task")
+                Button(
+                    onClick = { navController.navigate("task/$listId") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("+ Add Task")
+                }
             }
             LazyColumn(
                 modifier = Modifier

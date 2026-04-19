@@ -98,7 +98,8 @@ fun TaskScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -111,7 +112,7 @@ fun TaskScreen(
 
             Text(text = "Task Title", modifier = Modifier.padding(16.dp))
 
-            TextField(
+            OutlinedTextField(
                 value = taskTitle,
                 onValueChange = { taskTitle = it },
                 label = { Text("Enter task title") },
@@ -186,7 +187,7 @@ fun TaskScreen(
             // -----------------------
             Text(text = "Notes", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
 
-            TextField(
+            OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
                 label = { Text("Enter notes / consequence") },
@@ -283,7 +284,12 @@ fun TaskScreen(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
             ) {
                 Text("Save Task")
             }
