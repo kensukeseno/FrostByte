@@ -20,6 +20,10 @@ import androidx.navigation.NavController
 import com.example.frostbyte.ui.components.Header
 import com.example.frostbyte.viewmodel.HomeViewModel
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 
 @Composable
 fun HomeScreen(
@@ -32,6 +36,19 @@ fun HomeScreen(
     val lists by homeViewModel.allLists.collectAsState(initial = emptyList())
 
     Scaffold(
+        //FAB pinned to bottom right corner
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { showDialog = true },
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add List",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
@@ -41,13 +58,6 @@ fun HomeScreen(
         ) {
             //showBack = false to remove the back button from view
             Header(navController = navController, title = "Task Lists", showBack = false)
-
-            // Add Category Button
-            Button(
-                onClick = { showDialog = true }
-            ) {
-                Text("Add List")
-            }
 
             if (showDialog) {
                 AlertDialog(

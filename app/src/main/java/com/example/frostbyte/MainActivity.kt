@@ -16,20 +16,10 @@ import com.example.frostbyte.ui.theme.FrostByte
 
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
-
-            FrostByte {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    FrostByteApp()
-                }
-            }
+            FrostByteApp()
         }
     }
 }
@@ -43,8 +33,15 @@ fun FrostByteApp() {
     val context = LocalContext.current
     val appContainer = AppContainer(context)
 
-    AppNavGraph(
-        navController = navController,
-        appContainer = appContainer
-    )
+    FrostByte {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            AppNavGraph(
+                navController = navController,
+                appContainer = appContainer
+            )
+        }
+    }
 }
