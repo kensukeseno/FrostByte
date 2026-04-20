@@ -30,6 +30,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.unit.dp
 import com.example.frostbyte.ui.components.ListCard
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ButtonDefaults
+
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -88,7 +90,10 @@ fun HomeScreen(
                     showDialog = false
                     listName = ""
                 },
-                title = { Text("Add New List") },
+                title = { Text(
+                    "Add New List",
+                    color = MaterialTheme.colorScheme.secondary
+                ) },
                 text = {
                     TextField(
                         value = listName,
@@ -104,7 +109,11 @@ fun HomeScreen(
                             }
                             showDialog = false
                             listName = ""
-                        }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
                         Text("Save")
                     }
@@ -113,7 +122,11 @@ fun HomeScreen(
                     Button(onClick = {
                         showDialog = false
                         listName = ""
-                    }) {
+                    },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.errorContainer
+                        )) {
                         Text("Cancel")
                     }
                 }

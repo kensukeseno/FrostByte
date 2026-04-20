@@ -16,8 +16,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.heightIn
 
 @Composable
 fun TaskItem(
@@ -27,7 +29,10 @@ fun TaskItem(
 ) {
     Card(
         onClick = onEditClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 64.dp),
+        shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
@@ -43,6 +48,7 @@ fun TaskItem(
             Text(
                 text = task.title,
                 style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(start = 8.dp),
                 color = MaterialTheme.colorScheme.onSurface
             )
             IconButton(onClick = onDeleteClick) {

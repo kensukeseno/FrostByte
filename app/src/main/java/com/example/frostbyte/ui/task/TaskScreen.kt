@@ -1,5 +1,6 @@
 package com.example.frostbyte.ui.task
 
+import android.R.attr.label
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -205,17 +206,23 @@ fun TaskScreen(
                     onValueChange = { importance = it },
                     valueRange = 1f..5f,
                     steps = 3,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
+                        activeTrackColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
+                        inactiveTrackColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+                    )
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("!")
-                    Text("!!")
-                    Text("!!!")
-                    Text("!!!!")
-                    Text("!!!!!")
+                    listOf("!", "!!", "!!!", "!!!!", "!!!!!").forEachIndexed { index, label ->
+                        Text(
+                            text = label,
+                            color = MaterialTheme.colorScheme.error.copy(alpha = (index + 1) * 0.2f)
+                        )
+                    }
                 }
             }
 
@@ -230,7 +237,12 @@ fun TaskScreen(
                     onValueChange = { urgency = it },
                     valueRange = 1f..5f,
                     steps = 3,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
+                        activeTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
+                        inactiveTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
+                    )
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -288,7 +300,8 @@ fun TaskScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text("Save Task")

@@ -24,6 +24,7 @@ import com.example.frostbyte.viewmodel.TaskViewModel
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
 import com.example.frostbyte.ui.components.CategoryCard
@@ -97,12 +98,23 @@ fun ResultsScreen(
                             .padding(horizontal = 16.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
-                    ){
+                    ) {
                         Text(task.title, style = MaterialTheme.typography.bodyLarge)
                         Row {
-                            TextButton(onClick = { taskViewModel.deleteTask(task) }) { Text("delete") }
-                            TextButton(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("edit") }
-                            }
+                            TextButton(
+                                onClick = { taskViewModel.deleteTask(task) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) { Text("delete") }
+
+                            TextButton(
+                                onClick = { navController.navigate("task/$listId/${task.taskId}") },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            ) { Text("edit") }
+                        }
                     }
                 }
             }
@@ -110,7 +122,7 @@ fun ResultsScreen(
             // SCHEDULE Section
             CategoryCard(
                 title = "Schedule",
-                headerColor = MaterialTheme.colorScheme.secondary
+                headerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
             ) {
                 tasksSchedule.forEach { task ->
                     Row(
@@ -121,7 +133,12 @@ fun ResultsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(task.title, style = MaterialTheme.typography.bodyLarge)
-                        TextButton(onClick = { scheduleTaskInCalendar(task) }) { Text("+add to calendar") }
+                        TextButton(
+                            onClick = { scheduleTaskInCalendar(task) },
+                                colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            ) { Text("+add to calendar") }
                     }
                 }
             }
@@ -129,7 +146,7 @@ fun ResultsScreen(
             // DELEGATE Section
             CategoryCard(
                 title = "Delegate",
-                headerColor = MaterialTheme.colorScheme.tertiary
+                headerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
             ) {
                 tasksDelegate.forEach { task ->
                     Row(
@@ -141,8 +158,19 @@ fun ResultsScreen(
                     ) {
                         Text(task.title, style = MaterialTheme.typography.bodyLarge)
                         Row {
-                            TextButton(onClick = { taskViewModel.deleteTask(task) }) { Text("delete") }
-                            TextButton(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("edit") }
+                            TextButton(
+                                onClick = { taskViewModel.deleteTask(task) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) { Text("delete") }
+
+                            TextButton(
+                                onClick = { navController.navigate("task/$listId/${task.taskId}") },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            ) { Text("edit") }
                         }
                     }
                 }
@@ -151,7 +179,7 @@ fun ResultsScreen(
             // DELETE Section
             CategoryCard(
                 title = "Delete",
-                headerColor = MaterialTheme.colorScheme.error
+                headerColor = MaterialTheme.colorScheme.errorContainer
             ) {
                 tasksDelete.forEach { task ->
                     Row(
@@ -163,8 +191,21 @@ fun ResultsScreen(
                     ) {
                         Text(task.title, style = MaterialTheme.typography.bodyLarge)
                         Row {
-                            TextButton(onClick = { taskViewModel.deleteTask(task) }) { Text("delete") }
-                            TextButton(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("edit") }
+                            TextButton(
+                                onClick = { taskViewModel.deleteTask(task) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) { Text("delete") }
+
+                            TextButton(
+                                onClick = { navController.navigate("task/$listId/${task.taskId}") },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            ) {
+                                Text("edit")
+                            }
                         }
                     }
                 }

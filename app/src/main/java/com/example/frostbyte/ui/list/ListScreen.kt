@@ -42,6 +42,7 @@ fun ListScreen(
         ) {
             Header(navController = navController, title = listName)
 
+
             // Add Task Button
             Row(
                 modifier = Modifier
@@ -82,7 +83,8 @@ fun ListScreen(
                         .fillMaxWidth()
                     .padding(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
                 )
             ) {
                 Text("Prioritize!")
