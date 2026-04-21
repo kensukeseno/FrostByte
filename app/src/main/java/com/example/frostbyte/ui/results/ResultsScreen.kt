@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,6 +21,14 @@ import androidx.compose.runtime.getValue
 import com.example.frostbyte.data.entity.TaskEntity
 import com.example.frostbyte.domain.EisenhowerEngine
 import com.example.frostbyte.viewmodel.TaskViewModel
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.Alignment
+import com.example.frostbyte.ui.components.CategoryCard
+import com.example.frostbyte.ui.theme.tertiaryLight
 
 @Composable
 fun ResultsScreen(
@@ -57,61 +67,147 @@ fun ResultsScreen(
             putExtra(CalendarContract.Events.DESCRIPTION, task.notes)
             task.dueDate?.let {
                 putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, it)
-                putExtra(CalendarContract.EXTRA_EVENT_END_TIME, it + 3600000) // Default 1 hour duration
+                putExtra(
+                    CalendarContract.EXTRA_EVENT_END_TIME,
+                    it + 3600000
+                ) // Default 1 hour duration
             }
         }
         context.startActivity(intent)
     }
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Header(navController = navController, title = "Result")
 
-    Column(modifier = Modifier.fillMaxSize()) {
+            // DO Section
+            CategoryCard(
+                title = "Do",
+                headerColor = MaterialTheme.colorScheme.primary
+            ) {
+                tasksDo.forEach { task ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(task.title, style = MaterialTheme.typography.bodyLarge)
+                        Row {
+                            TextButton(
+                                onClick = { taskViewModel.deleteTask(task) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) { Text("delete") }
 
-        Header(navController = navController, title = "Result")
-
-        // DO Section
-        Text(text = "DO (${tasksDo.size})")
-        LazyColumn(modifier = Modifier.height(100.dp)) { // each section scrollable
-            items(tasksDo) { task ->
-                Row {
-                    Text(text = task.title)
-                    Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
-                    Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
+                            TextButton(
+                                onClick = { navController.navigate("task/$listId/${task.taskId}") },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            ) { Text("edit") }
+                        }
+                    }
                 }
             }
-        }
 
-        // SCHEDULE Section
-        Text(text = "SCHEDULE (${tasksSchedule.size})")
-        LazyColumn(modifier = Modifier.height(100.dp)) {
-            items(tasksSchedule) { task ->
-                Row {
-                    Text(text = task.title)
-                    Button(onClick = { scheduleTaskInCalendar(task) }) { Text("Schedule") }
-                    Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
-                    Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
+            // SCHEDULE Section
+            CategoryCard(
+                title = "Schedule",
+                headerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+            ) {
+                tasksSchedule.forEach { task ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(task.title, style = MaterialTheme.typography.bodyLarge)
+                        TextButton(
+                            onClick = { scheduleTaskInCalendar(task) },
+                                colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            ) { Text("+add to calendar") }
+                    }
                 }
             }
-        }
 
-        // DELEGATE Section
-        Text(text = "DELEGATE (${tasksDelegate.size})")
-        LazyColumn(modifier = Modifier.height(100.dp)) {
-            items(tasksDelegate) { task ->
-                Row {
-                    Text(text = task.title)
-                    Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
-                    Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
+            // DELEGATE Section
+            CategoryCard(
+                title = "Delegate",
+                headerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
+            ) {
+                tasksDelegate.forEach { task ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(task.title, style = MaterialTheme.typography.bodyLarge)
+                        Row {
+                            TextButton(
+                                onClick = { taskViewModel.deleteTask(task) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) { Text("delete") }
+
+                            TextButton(
+                                onClick = { navController.navigate("task/$listId/${task.taskId}") },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            ) { Text("edit") }
+                        }
+                    }
                 }
             }
-        }
 
-        // DELETE Section
-        Text(text = "DELETE (${tasksDelete.size})")
-        LazyColumn(modifier = Modifier.height(100.dp)) {
-            items(tasksDelete) { task ->
-                Row {
-                    Text(text = task.title)
-                    Button(onClick = { navController.navigate("task/$listId/${task.taskId}") }) { Text("Edit") }
-                    Button(onClick = { taskViewModel.deleteTask(task) }) { Text("Delete") }
+            // DELETE Section
+            CategoryCard(
+                title = "Delete",
+                headerColor = MaterialTheme.colorScheme.errorContainer
+            ) {
+                tasksDelete.forEach { task ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(task.title, style = MaterialTheme.typography.bodyLarge)
+                        Row {
+                            TextButton(
+                                onClick = { taskViewModel.deleteTask(task) },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) { Text("delete") }
+
+                            TextButton(
+                                onClick = { navController.navigate("task/$listId/${task.taskId}") },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            ) {
+                                Text("edit")
+                            }
+                        }
+                    }
                 }
             }
         }
