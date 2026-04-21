@@ -146,9 +146,12 @@ fun TaskScreen(
                 ) {
                     Button(
                         onClick = { showDatePicker = true },
-                        colors = if (selectedDate == null) ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
-                        ) else ButtonDefaults.buttonColors()
+                        colors = if (selectedDate == null)
+                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        else ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary
+                        )
                     ) {
                         val displayText = if (selectedDate == null) {
                             "Select Date"
@@ -159,7 +162,7 @@ fun TaskScreen(
                         }
                         Text(displayText)
                     }
-                }
+
                     Button(
                         onClick = { showTimePicker = true },
                         colors = ButtonDefaults.buttonColors(
@@ -210,176 +213,178 @@ fun TaskScreen(
                             )
                         )
                     }
-
-                    if (showTimePicker) {
-                        AlertDialog(
-                            onDismissRequest = { showTimePicker = false },
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        selectedHour = String.format("%02d", timePickerState.hour)
-                                        selectedMinute =
-                                            String.format("%02d", timePickerState.minute)
-                                        showTimePicker = false
-                                    },
-                                    colors = ButtonDefaults.textButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.secondary
-                                    )
-                                ) { Text("OK") }
-                            },
-                            dismissButton = {
-                                TextButton(
-                                    onClick = { showTimePicker = false },
-                                    colors = ButtonDefaults.textButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.error
-                                    )
-                                ) { Text("Cancel") }
-                            },
-                            text = {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    TimePicker(state = timePickerState)
-                                }
-                            }
-                        )
-                    }
-
-                    // -----------------------
-                    // Notes Section
-                    // -----------------------
-                    Text(text = "Notes", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-                    OutlinedTextField(
-                        value = notes,
-                        onValueChange = { notes = it },
-                        label = { Text("Enter notes / consequence") },
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-                    )
-
-                    // -----------------------
-                    // Impact Section
-                    // -----------------------
-                    Text(
-                        text = "Importance",
-                        modifier = Modifier.padding(top = 16.dp, start = 16.dp)
-                    )
-
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Slider(
-                            value = importance,
-                            onValueChange = { importance = it },
-                            valueRange = 1f..5f,
-                            steps = 3,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = SliderDefaults.colors(
-                                thumbColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
-                                activeTrackColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
-                                inactiveTrackColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
-                            )
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            listOf(
-                                "!",
-                                "!!",
-                                "!!!",
-                                "!!!!",
-                                "!!!!!"
-                            ).forEachIndexed { index, label ->
-                                Text(
-                                    text = label,
-                                    color = MaterialTheme.colorScheme.error.copy(alpha = (index + 1) * 0.2f)
-                                )
-                            }
-                        }
-                    }
-
-                    // -----------------------
-                    // Urgency Section
-                    // -----------------------
-                    Text(text = "Urgency", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Slider(
-                            value = urgency,
-                            onValueChange = { urgency = it },
-                            valueRange = 1f..5f,
-                            steps = 3,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = SliderDefaults.colors(
-                                thumbColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
-                                activeTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
-                                inactiveTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
-                            )
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("1")
-                            Text("2")
-                            Text("3")
-                            Text("4")
-                            Text("5")
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
                 }
-                Button(
-                    onClick = {
-                        if (taskTitle.isNotBlank() && selectedDate != null) {
-                            val finalDueDate = calculateFinalDueDate()
-                            if (taskId == null) {
-                                taskViewModel.addTask(
-                                    listId = listId,
-                                    title = taskTitle.trim(),
-                                    notes = notes.ifBlank { null },
-                                    importance = importance.toInt(),
-                                    urgency = urgency.toInt(),
-                                    dueDate = finalDueDate
+
+                if (showTimePicker) {
+                    AlertDialog(
+                        onDismissRequest = { showTimePicker = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    selectedHour = String.format("%02d", timePickerState.hour)
+                                    selectedMinute =
+                                        String.format("%02d", timePickerState.minute)
+                                    showTimePicker = false
+                                },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.secondary
                                 )
-                            } else {
-                                taskViewModel.updateTask(
-                                    taskId = taskId,
-                                    listId = listId,
-                                    title = taskTitle.trim(),
-                                    notes = notes.ifBlank { null },
-                                    importance = importance.toInt(),
-                                    urgency = urgency.toInt(),
-                                    dueDate = finalDueDate
+                            ) { Text("OK") }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showTimePicker = false },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
                                 )
+                            ) { Text("Cancel") }
+                        },
+                        text = {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                TimePicker(state = timePickerState)
                             }
-                            navController.popBackStack()
+                        }
+                    )
+                }
+
+                // -----------------------
+                // Notes Section
+                // -----------------------
+                Text(text = "Notes", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text("Enter notes / consequence") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                )
+
+                // -----------------------
+                // Impact Section
+                // -----------------------
+                Text(
+                    text = "Importance",
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp)
+                )
+
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Slider(
+                        value = importance,
+                        onValueChange = { importance = it },
+                        valueRange = 1f..5f,
+                        steps = 3,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
+                            activeTrackColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
+                            inactiveTrackColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+                        )
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        listOf(
+                            "!",
+                            "!!",
+                            "!!!",
+                            "!!!!",
+                            "!!!!!"
+                        ).forEachIndexed { index, label ->
+                            Text(
+                                text = label,
+                                color = MaterialTheme.colorScheme.error.copy(alpha = (index + 1) * 0.2f)
+                            )
+                        }
+                    }
+                }
+
+                // -----------------------
+                // Urgency Section
+                // -----------------------
+                Text(text = "Urgency", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Slider(
+                        value = urgency,
+                        onValueChange = { urgency = it },
+                        valueRange = 1f..5f,
+                        steps = 3,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
+                            activeTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
+                            inactiveTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
+                        )
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("1")
+                        Text("2")
+                        Text("3")
+                        Text("4")
+                        Text("5")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+            Button(
+                onClick = {
+                    if (taskTitle.isNotBlank() && selectedDate != null) {
+                        val finalDueDate = calculateFinalDueDate()
+                        if (taskId == null) {
+                            taskViewModel.addTask(
+                                listId = listId,
+                                title = taskTitle.trim(),
+                                notes = notes.ifBlank { null },
+                                importance = importance.toInt(),
+                                urgency = urgency.toInt(),
+                                dueDate = finalDueDate
+                            )
                         } else {
-                            scope.launch {
-                                val message = if (taskTitle.isBlank() && selectedDate == null) {
-                                    "Title and Date are required"
-                                } else if (taskTitle.isBlank()) {
-                                    "Title is required"
-                                } else {
-                                    "Date is required"
-                                }
-                                snackbarHostState.showSnackbar(message)
-                            }
+                            taskViewModel.updateTask(
+                                taskId = taskId,
+                                listId = listId,
+                                title = taskTitle.trim(),
+                                notes = notes.ifBlank { null },
+                                importance = importance.toInt(),
+                                urgency = urgency.toInt(),
+                                dueDate = finalDueDate
+                            )
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text("Save Task")
-                }
+                        navController.popBackStack()
+                    } else {
+                        scope.launch {
+                            val message = if (taskTitle.isBlank() && selectedDate == null) {
+                                "Title and Date are required"
+                            } else if (taskTitle.isBlank()) {
+                                "Title is required"
+                            } else {
+                                "Date is required"
+                            }
+                            snackbarHostState.showSnackbar(message)
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text("Save Task")
             }
         }
     }
+}
+
 
