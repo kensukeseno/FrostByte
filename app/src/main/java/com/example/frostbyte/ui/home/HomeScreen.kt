@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.example.frostbyte.ui.components.ListCard
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
 
 @Composable
 fun HomeScreen(
@@ -90,12 +91,13 @@ fun HomeScreen(
                     showDialog = false
                     listName = ""
                 },
+            containerColor = MaterialTheme.colorScheme.surface,
                 title = { Text(
                     "Add New List",
                     color = MaterialTheme.colorScheme.secondary
                 ) },
                 text = {
-                    TextField(
+                    OutlinedTextField(
                         value = listName,
                         onValueChange = { listName = it },
                         label = { Text("List Name") }
@@ -125,7 +127,7 @@ fun HomeScreen(
                     },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.errorContainer
+                            contentColor = MaterialTheme.colorScheme.error
                         )) {
                         Text("Cancel")
                     }

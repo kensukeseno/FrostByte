@@ -44,6 +44,12 @@ fun TaskScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    var showTimePicker by remember { mutableStateOf(false) }
+    val timePickerState = rememberTimePickerState(
+        initialHour = selectedHour.toIntOrNull() ?: 23,
+        initialMinute = selectedMinute.toIntOrNull() ?: 59
+    )
+
     // Load the task if taskId is present
     LaunchedEffect(taskId) {
         if (taskId != null) {
@@ -58,17 +64,21 @@ fun TaskScreen(
             notes = task.notes ?: ""
             importance = task.importance.toFloat()
             urgency = task.urgency.toFloat()
-            
+
             if (task.dueDate != null) {
                 val cal = Calendar.getInstance().apply { timeInMillis = task.dueDate }
-                
+
                 // Convert back to UTC Midnight for the selectedDate state
                 val utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
                     clear()
-                    set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+                    set(
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH)
+                    )
                 }
                 selectedDate = utcCal.timeInMillis
-                
+
                 selectedHour = String.format("%02d", cal.get(Calendar.HOUR_OF_DAY))
                 selectedMinute = String.format("%02d", cal.get(Calendar.MINUTE))
             }
@@ -79,13 +89,13 @@ fun TaskScreen(
         return selectedDate?.let { date ->
             val hour = selectedHour.toIntOrNull()?.coerceIn(0, 23) ?: 23
             val minute = selectedMinute.toIntOrNull()?.coerceIn(0, 59) ?: 59
-            
+
             // The date from DatePicker is UTC midnight. 
             // We extract components using UTC to avoid timezone shifts.
             val utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
                 timeInMillis = date
             }
-            
+
             Calendar.getInstance().apply {
                 set(Calendar.YEAR, utcCal.get(Calendar.YEAR))
                 set(Calendar.MONTH, utcCal.get(Calendar.MONTH))
@@ -104,160 +114,226 @@ fun TaskScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
         ) {
-
-            Header(navController = navController, title = "Task Details")
-
-            Text(text = "Task Title", modifier = Modifier.padding(16.dp))
-
-            OutlinedTextField(
-                value = taskTitle,
-                onValueChange = { taskTitle = it },
-                label = { Text("Enter task title") },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                isError = taskTitle.isBlank()
-            )
-
-            // -----------------------
-            // Deadline Section
-            // -----------------------
-            Text(text = "Deadline", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Button(
-                    onClick = { showDatePicker = true },
-                    colors = if (selectedDate == null) ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error) else ButtonDefaults.buttonColors()
-                ) {
-                    val displayText = if (selectedDate == null) {
-                        "Select Date"
-                    } else {
-                        val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-                        sdf.timeZone = TimeZone.getTimeZone("UTC") // Force display to UTC
-                        sdf.format(selectedDate)
-                    }
-                    Text(displayText)
-                }
+                Header(navController = navController, title = "Task Details")
+
+                Text(text = "Task Title", modifier = Modifier.padding(16.dp))
 
                 OutlinedTextField(
-                    value = selectedHour,
-                    onValueChange = { if (it.length <= 2) selectedHour = it.filter { char -> char.isDigit() } },
-                    modifier = Modifier.width(65.dp),
-                    label = { Text("HH") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true
+                    value = taskTitle,
+                    onValueChange = { taskTitle = it },
+                    label = { Text("Enter task title") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    isError = taskTitle.isBlank()
                 )
-                Text(":")
-                OutlinedTextField(
-                    value = selectedMinute,
-                    onValueChange = { if (it.length <= 2) selectedMinute = it.filter { char -> char.isDigit() } },
-                    modifier = Modifier.width(65.dp),
-                    label = { Text("MM") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true
-                )
-            }
 
-            if (showDatePicker) {
-                val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate)
-                DatePickerDialog(
-                    onDismissRequest = { showDatePicker = false },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                selectedDate = datePickerState.selectedDateMillis
-                                showDatePicker = false
-                            }
-                        ) {
-                            Text("OK")
-                        }
-                    }
-                ) {
-                    DatePicker(state = datePickerState)
-                }
-            }
+                // -----------------------
+                // Deadline Section
+                // -----------------------
+                Text(text = "Deadline", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
 
-            // -----------------------
-            // Notes Section
-            // -----------------------
-            Text(text = "Notes", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-            OutlinedTextField(
-                value = notes,
-                onValueChange = { notes = it },
-                label = { Text("Enter notes / consequence") },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-            )
-
-            // -----------------------
-            // Impact Section
-            // -----------------------
-            Text(text = "Importance", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Slider(
-                    value = importance,
-                    onValueChange = { importance = it },
-                    valueRange = 1f..5f,
-                    steps = 3,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
-                        activeTrackColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
-                        inactiveTrackColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
-                    )
-                )
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    listOf("!", "!!", "!!!", "!!!!", "!!!!!").forEachIndexed { index, label ->
-                        Text(
-                            text = label,
-                            color = MaterialTheme.colorScheme.error.copy(alpha = (index + 1) * 0.2f)
+                    Button(
+                        onClick = { showDatePicker = true },
+                        colors = if (selectedDate == null)
+                            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        else ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary
+                        )
+                    ) {
+                        val displayText = if (selectedDate == null) {
+                            "Select Date"
+                        } else {
+                            val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                            sdf.timeZone = TimeZone.getTimeZone("UTC") // Force display to UTC
+                            sdf.format(selectedDate)
+                        }
+                        Text(displayText)
+                    }
+
+                    Button(
+                        onClick = { showTimePicker = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary
+                        )
+                    ) {
+                        Text("$selectedHour:$selectedMinute")
+                    }
+                }
+                if (showDatePicker) {
+                    val datePickerState =
+                        rememberDatePickerState(initialSelectedDateMillis = selectedDate)
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePicker = false },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    selectedDate = datePickerState.selectedDateMillis
+                                    showDatePicker = false
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                Text("OK")
+                            }
+                        },
+                        colors = DatePickerDefaults.colors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                        )
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            colors = DatePickerDefaults.colors(
+                                titleContentColor = MaterialTheme.colorScheme.primary,
+                                headlineContentColor = MaterialTheme.colorScheme.primary,
+                                weekdayContentColor = MaterialTheme.colorScheme.onSurface,
+                                dayContentColor = MaterialTheme.colorScheme.onSurface,
+                                todayContentColor = MaterialTheme.colorScheme.primary,
+                                todayDateBorderColor = MaterialTheme.colorScheme.primary,
+                                selectedDayContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedDayContentColor = MaterialTheme.colorScheme.onPrimary,
+                                selectedYearContainerColor = MaterialTheme.colorScheme.primary,
+                                selectedYearContentColor = MaterialTheme.colorScheme.onPrimary,
+                                yearContentColor = MaterialTheme.colorScheme.onSurface,
+                                currentYearContentColor = MaterialTheme.colorScheme.primary,
+                            )
                         )
                     }
                 }
-            }
 
-            // -----------------------
-            // Urgency Section
-            // -----------------------
-            Text(text = "Urgency", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
-
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Slider(
-                    value = urgency,
-                    onValueChange = { urgency = it },
-                    valueRange = 1f..5f,
-                    steps = 3,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
-                        activeTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
-                        inactiveTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
+                if (showTimePicker) {
+                    AlertDialog(
+                        onDismissRequest = { showTimePicker = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    selectedHour = String.format("%02d", timePickerState.hour)
+                                    selectedMinute =
+                                        String.format("%02d", timePickerState.minute)
+                                    showTimePicker = false
+                                },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.secondary
+                                )
+                            ) { Text("OK") }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showTimePicker = false },
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) { Text("Cancel") }
+                        },
+                        text = {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                TimePicker(state = timePickerState)
+                            }
+                        }
                     )
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("1")
-                    Text("2")
-                    Text("3")
-                    Text("4")
-                    Text("5")
                 }
+
+                // -----------------------
+                // Notes Section
+                // -----------------------
+                Text(text = "Notes", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+
+                OutlinedTextField(
+                    value = notes,
+                    onValueChange = { notes = it },
+                    label = { Text("Enter notes / consequence") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                )
+
+                // -----------------------
+                // Impact Section
+                // -----------------------
+                Text(
+                    text = "Importance",
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp)
+                )
+
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Slider(
+                        value = importance,
+                        onValueChange = { importance = it },
+                        valueRange = 1f..5f,
+                        steps = 3,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
+                            activeTrackColor = MaterialTheme.colorScheme.error.copy(alpha = (importance / 5f)),
+                            inactiveTrackColor = MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
+                        )
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        listOf(
+                            "!",
+                            "!!",
+                            "!!!",
+                            "!!!!",
+                            "!!!!!"
+                        ).forEachIndexed { index, label ->
+                            Text(
+                                text = label,
+                                color = MaterialTheme.colorScheme.error.copy(alpha = (index + 1) * 0.2f)
+                            )
+                        }
+                    }
+                }
+
+                // -----------------------
+                // Urgency Section
+                // -----------------------
+                Text(text = "Urgency", modifier = Modifier.padding(top = 16.dp, start = 16.dp))
+
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Slider(
+                        value = urgency,
+                        onValueChange = { urgency = it },
+                        valueRange = 1f..5f,
+                        steps = 3,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
+                            activeTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = (urgency / 5f)),
+                            inactiveTrackColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
+                        )
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("1")
+                        Text("2")
+                        Text("3")
+                        Text("4")
+                        Text("5")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
             Button(
                 onClick = {
                     if (taskTitle.isNotBlank() && selectedDate != null) {
@@ -298,7 +374,8 @@ fun TaskScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -309,3 +386,5 @@ fun TaskScreen(
         }
     }
 }
+
+

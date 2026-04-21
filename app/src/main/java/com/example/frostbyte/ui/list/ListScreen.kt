@@ -41,7 +41,7 @@ fun ListScreen(
                 .padding(paddingValues)
         ) {
             Header(navController = navController, title = listName)
-
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Add Task Button
             Row(
@@ -81,7 +81,8 @@ fun ListScreen(
                 },
                         modifier = Modifier
                         .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.onSecondary

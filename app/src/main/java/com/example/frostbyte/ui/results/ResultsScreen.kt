@@ -85,7 +85,7 @@ fun ResultsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Header(navController = navController, title = "Result")
-
+            Spacer(modifier = Modifier.height(16.dp))
             // DO Section
             CategoryCard(
                 title = "Do",
