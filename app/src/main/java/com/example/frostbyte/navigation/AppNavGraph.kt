@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.frostbyte.data.AppContainer
+import com.example.frostbyte.ui.StartScreen
 import com.example.frostbyte.ui.home.HomeScreen
 import com.example.frostbyte.viewmodel.HomeViewModel
 import com.example.frostbyte.viewmodel.HomeViewModelFactory
@@ -22,8 +23,12 @@ fun AppNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = "home"
-    ) {
+        startDestination = "start"
+    ){
+        composable("start") {
+            StartScreen(navController = navController)
+        }
+
 
         composable("home") {
             val homeViewModel: HomeViewModel = viewModel(
